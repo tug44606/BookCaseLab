@@ -7,7 +7,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
     boolean isPortrait; // tell whether single pane or double
     BookDetailsFragment dFragment;
-
+    ViewPagerFragment vpFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,22 +23,36 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
 
         BookListFragment listFragment = new BookListFragment();
-
+        vpFragment = new ViewPagerFragment();
         dFragment = new BookDetailsFragment();
 
         if(isPortrait){
             // set single view fragment
+            getSupportFragmentManager().
+                    beginTransaction().
+                    replace(R.id.container_main, vpFragment).
+                    addToBackStack(null).
+                    commit();
         }
         else {
             // set split view with fragments
+            getSupportFragmentManager().
+                    beginTransaction().
+                    replace(R.id.container_left, listFragment).
+                    addToBackStack(null).
+                    commit();
 
+            getSupportFragmentManager().
+                    beginTransaction().
+                    replace(R.id.container_right, dFragment).
+                    addToBackStack(null).
+                    commit();
         }
 
     }
 
-
     @Override
-    public void pickBook(String bookTitle) {
+    public void pickBook(String bTitle) {
 
     }
 }
