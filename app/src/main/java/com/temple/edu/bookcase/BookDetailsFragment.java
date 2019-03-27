@@ -51,4 +51,8 @@ public class BookDetailsFragment extends Fragment {
 
         return v;
     }
+
+    public void setBook(String book){
+        tv.setText(book);
+    }
 }

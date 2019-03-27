@@ -53,6 +53,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
     @Override
     public void pickBook(String bTitle) {
-
+        dFragment.setBook(bTitle);
     }
 }
