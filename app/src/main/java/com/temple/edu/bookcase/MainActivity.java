@@ -1,5 +1,6 @@
 package com.temple.edu.bookcase;
 
+import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -14,19 +15,12 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(findViewById(R.id.container_right) == null){
-            isPortrait = true;
-        }
-        else {
-            isPortrait = false;
-        }
-
 
         BookListFragment listFragment = new BookListFragment();
         vpFragment = new ViewPagerFragment();
         dFragment = new BookDetailsFragment();
 
-        if(isPortrait){
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             // set single view fragment
             getSupportFragmentManager().
                     beginTransaction().
