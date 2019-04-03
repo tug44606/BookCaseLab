@@ -58,8 +58,8 @@ public class BookListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //ArrayList<String> bookList = new ArrayList<>();
         // populate list
-        //bookList.addAll(Arrays.asList("Book 1", "Book 2", "Book 3", "Book 4", "Book 5", "Book 6", "Book 7", "Book 8",
-        //        "Book 9", "Book 10"));
+        //bookList.addAll(Arrays.asList("com.temple.edu.bookcase.Book 1", "com.temple.edu.bookcase.Book 2", "com.temple.edu.bookcase.Book 3", "com.temple.edu.bookcase.Book 4", "com.temple.edu.bookcase.Book 5", "com.temple.edu.bookcase.Book 6", "com.temple.edu.bookcase.Book 7", "com.temple.edu.bookcase.Book 8",
+        //        "com.temple.edu.bookcase.Book 9", "com.temple.edu.bookcase.Book 10"));
 
 
         // Inflate the layout for this fragment
