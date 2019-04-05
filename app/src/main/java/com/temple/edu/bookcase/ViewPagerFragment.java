@@ -13,6 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class ViewPagerFragment extends Fragment {
@@ -22,39 +26,43 @@ public class ViewPagerFragment extends Fragment {
     BookDetailsFragment dFragment;
     PagerAdapter pAdapter;
 
+    Book bookObject;
     // constructor
     public ViewPagerFragment(){
 
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        //  Inflate layout
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate layout
         View v = inflater.inflate(R.layout.viewpager_fragment, container, false);
+
+        // Set adapter and view pager
+        pAdapter = new PagerAdapter(getFragmentManager());
         vp = v.findViewById(R.id.viewPager);
-
-        // Get books
-        Resources res = this.getResources();
-        final String[] bookList = res.getStringArray(R.array.bookList);
-
-        dFragment = new BookDetailsFragment();
-        vp = v.findViewById(R.id.viewPager);
-
-        // new page adapter
-        // is abstract so cant be instantiated, need to implement methods
-        pAdapter = new PagerAdapter(getChildFragmentManager());
-
-        // Loop through list and create detail fragments instance and add to pager
-        for(int i = 0; i < bookList.length; i++){
-            dFragment = BookDetailsFragment.detailFragmentFactory(bookList[i]);
-            pAdapter.add(dFragment);
-        }
-
-        // set view pager
-        vp.setAdapter(pAdapter);
 
         return v;
+    }
+
+
+    public void updateViewPager(JSONArray bookArray){
+        JSONObject jsonList;
+        for(int i = 0; i < bookArray.length(); i++){
+            try {
+                jsonList = bookArray.getJSONObject(i);
+                // Create a new book object from JSon array
+                bookObject = new Book(jsonList);
+                // Get the detail fragment from the static method
+                dFragment = BookDetailsFragment.setDetailFragmentParams(bookObject);
+                // Set adapter and pager
+                pAdapter.add(dFragment);
+                vp.setAdapter(pAdapter);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     class PagerAdapter extends FragmentStatePagerAdapter {

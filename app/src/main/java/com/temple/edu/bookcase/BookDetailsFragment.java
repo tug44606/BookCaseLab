@@ -25,22 +25,8 @@ public class BookDetailsFragment extends Fragment {
 
     }
 
-    // create a factory that makes new instance every time
-    /*
-    public static BookDetailsFragment detailFragmentFactory(String book) {
-        BookDetailsFragment fragment = new BookDetailsFragment();
-
-        Bundle bundle = new Bundle();
-        bundle.putString("bookPick", book);
-
-        fragment.setArguments(bundle);
-
-        return fragment;
-    }
-    */
-
-
-    public static BookDetailsFragment detailFragmentFactory(Book bookList) {
+    // pass it to the next detail fragment for onCreate()
+    public static BookDetailsFragment setDetailFragmentParams(Book bookList) {
         BookDetailsFragment fragment = new BookDetailsFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("bookPick", bookList);
@@ -79,6 +65,19 @@ public class BookDetailsFragment extends Fragment {
         }
 
         return view;
+    }
+
+    public void updateBook(Book bookObject){
+        author = bookObject.getAuthor();
+        title = bookObject.getTitle();
+        published = bookObject.getPublished();
+
+        tv.setText(title);
+        tv.append(" by " + author);
+        tv.append(", " + published);
+
+        String imageURL = bookObject.getCoverURL();
+        Picasso.get().load(imageURL).into(iv);
     }
 
 }

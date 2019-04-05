@@ -1,14 +1,25 @@
 package com.temple.edu.bookcase;
 
 import android.content.res.Configuration;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements BookListFragment.BookListInterface {
 
-    boolean isPortrait; // tell whether single pane or double
     BookDetailsFragment dFragment;
     ViewPagerFragment vpFragment;
+    JSONArray jsonList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +30,46 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         BookListFragment listFragment = new BookListFragment();
         vpFragment = new ViewPagerFragment();
         dFragment = new BookDetailsFragment();
+
+
+        // Get books
+        URL url;
+        BufferedReader reader;
+
+        // this will hold entire json from the given url
+        StringBuilder jsonBookString = new StringBuilder();
+        String buffer;
+
+        // will display all the books currently in the database
+        String urlString = "https://kamorris.com/lab/audlib/booksearch.php?search=";
+
+        try {
+            url = new URL(urlString);
+            reader = new BufferedReader(new InputStreamReader(url.openStream()));
+
+            while ((buffer = reader.readLine()) != null) {
+                jsonBookString.append(buffer);
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Convert StringBuilder to String to pass to jsonArray constructor
+
+        try {
+            jsonList = new JSONArray(jsonBookString.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            vpFragment.updateViewPager(jsonList);
+        }
+        else {
+            listFragment.setBookList(jsonList);
+        }
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             // set single view fragment
@@ -43,10 +94,12 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                     commit();
         }
 
+        // button listener that passes the input string as parameter and return new json array
+
     }
 
     @Override
-    public void pickBook(String bTitle) {
-        dFragment.setBook(bTitle);
+    public void pickBook(Book jsonBook) {
+        dFragment.updateBook(jsonBook);
     }
 }

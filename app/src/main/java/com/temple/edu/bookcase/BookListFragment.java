@@ -94,7 +94,33 @@ public class BookListFragment extends Fragment {
 
         return v;
     }
-    
+
+    public void setBookList(JSONArray jsonArray){
+        // Set new booklist from JSON object passed in
+        bookList = new ArrayList<>();
+
+        for(int i = 0; i < jsonArray.length(); i++){
+            try {
+                bookList.add(new Book(jsonArray.getJSONObject(i)));
+            } catch (Exception e) {
+            }
+        }
+
+        bAdapter = new BookAdapter(c, bookList);
+
+
+        bAdapter.notifyDataSetChanged();
+
+        lv.setAdapter(bAdapter);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ((BookListInterface) c).pickBook(bookList.get(position));
+            }
+        });
+
+    }
 
     @Override
     public void onAttach(Context context) {
