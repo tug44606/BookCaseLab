@@ -41,17 +41,6 @@ public class BookListFragment extends Fragment {
         void pickBook(Book jsonBook);
     }
 
-    // constructor
-    public static BookListFragment bookListFactory(String b, String d) {
-        BookListFragment bFrag = new BookListFragment();
-        Bundle args = new Bundle();
-
-
-        bFrag.setArguments(args);
-
-        return bFrag;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

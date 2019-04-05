@@ -1,5 +1,6 @@
 package com.temple.edu.bookcase;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -56,9 +57,17 @@ public class BookDetailsFragment extends Fragment {
             title = bookObject.getTitle();
             published = bookObject.getPublished();
 
-            tv.setText(title);
-            tv.append(" by " + author);
-            tv.append(", " + published);
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+            {
+                tv.setText(title);
+                tv.append(" by " + author);
+                tv.append(", " + published);
+            }
+            else {
+                tv.setText(title);
+                tv.append(" by " + author);
+                //tv.append(", " + published);
+            }
 
             String imageURL = bookObject.getCoverURL();
             Picasso.get().load(imageURL).into(iv);
@@ -72,9 +81,17 @@ public class BookDetailsFragment extends Fragment {
         title = bookObject.getTitle();
         published = bookObject.getPublished();
 
-        tv.setText(title);
-        tv.append(" by " + author);
-        tv.append(", " + published);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+        {
+            tv.setText(title);
+            tv.append(" by " + author);
+            tv.append(", " + published);
+        }
+        else {
+            tv.setText(title);
+            tv.append(" by " + author);
+            //tv.append(", " + published);
+        }
 
         String imageURL = bookObject.getCoverURL();
         Picasso.get().load(imageURL).into(iv);

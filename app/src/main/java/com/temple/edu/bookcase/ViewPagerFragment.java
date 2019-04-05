@@ -47,22 +47,26 @@ public class ViewPagerFragment extends Fragment {
 
 
     public void updateViewPager(JSONArray bookArray){
-        JSONObject jsonList;
         for(int i = 0; i < bookArray.length(); i++){
             try {
-                jsonList = bookArray.getJSONObject(i);
-                // Create a new book object from JSon array
-                bookObject = new Book(jsonList);
-                // Get the detail fragment from the static method
+                // update
+                pAdapter.getItemPosition(i);
+                pAdapter.notifyDataSetChanged();
+
+                // get book object
+                JSONObject jsonBook = bookArray.getJSONObject(i);
+                bookObject = new Book(jsonBook);
+
+                // get fragment from the static method
                 dFragment = BookDetailsFragment.setDetailFragmentParams(bookObject);
-                // Set adapter and pager
                 pAdapter.add(dFragment);
-                vp.setAdapter(pAdapter);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
         }
+        // set view pager
+        vp.setAdapter(pAdapter);
     }
 
     class PagerAdapter extends FragmentStatePagerAdapter {
