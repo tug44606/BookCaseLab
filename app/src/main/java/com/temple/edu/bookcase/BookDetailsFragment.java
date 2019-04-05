@@ -5,13 +5,20 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 public class BookDetailsFragment extends Fragment {
 
     // variables
     TextView tv;
+    ImageView iv;
     String bTitle;
+
+    String title, author, published;
+    Book bookObject;
 
     // constructor
     public BookDetailsFragment(){
@@ -19,6 +26,7 @@ public class BookDetailsFragment extends Fragment {
     }
 
     // create a factory that makes new instance every time
+    /*
     public static BookDetailsFragment detailFragmentFactory(String book) {
         BookDetailsFragment fragment = new BookDetailsFragment();
 
@@ -29,30 +37,48 @@ public class BookDetailsFragment extends Fragment {
 
         return fragment;
     }
+    */
+
+
+    public static BookDetailsFragment detailFragmentFactory(Book bookList) {
+        BookDetailsFragment fragment = new BookDetailsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("bookPick", bookList);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null){
-            // get book title when fragment create
-            bTitle = getArguments().getString("bookPick");
+            bookObject = getArguments().getParcelable("bookPick");
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.booktext_fragment, container, false);
-        tv = v.findViewById(R.id.bookTitleTextView);
+        View view = inflater.inflate(R.layout.booktext_fragment, container, false);
+        tv = view.findViewById(R.id.bookTitleTextView);
+        iv = view.findViewById(R.id.bookImageView);
+        // Add these to layout after
+        //button = view.findViewById(R.id.button);
+        //searchBar = view.findViewById(R.id.searchBar);
+        if(getArguments() != null) {
+            author = bookObject.getAuthor();
+            title = bookObject.getTitle();
+            published = bookObject.getPublished();
 
-        // Set text of view to book title
-        tv.setText(bTitle);
+            tv.setText(title);
+            tv.append(" by " + author);
+            tv.append(", " + published);
 
-        return v;
+            String imageURL = bookObject.getCoverURL();
+            Picasso.get().load(imageURL).into(iv);
+        }
+
+        return view;
     }
 
-    public void setBook(String book){
-        tv.setText(book);
-    }
 }

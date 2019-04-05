@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +14,23 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+
 
 public class BookListFragment extends Fragment {
 
-    // interface to be implemented by main activity
+    // interface to be implemented
     public BookListInterface chooseBook;
 
     // variables
-    ListView lv;
     Context c;
+    ListView lv;
 
+    ArrayList<Book> bookList;
+    BookAdapter bAdapter;
 
     // constructor
     public BookListFragment(){
@@ -30,27 +38,24 @@ public class BookListFragment extends Fragment {
 
     // interface
     public interface BookListInterface{
-        void pickBook(String bTitle);
+        void pickBook(Book jsonBook);
     }
 
+    // constructor
+    public static BookListFragment bookListFactory(String b, String d) {
+        BookListFragment bFrag = new BookListFragment();
+        Bundle args = new Bundle();
+
+
+        bFrag.setArguments(args);
+
+        return bFrag;
+    }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof BookListInterface) {
-            chooseBook = (BookListInterface) context;
-        } else {
-            throw new RuntimeException(context.toString());
-        }
-        this.c = context;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        chooseBook = null;
-    }
-
 
     // on creation
     @Nullable
@@ -67,6 +72,7 @@ public class BookListFragment extends Fragment {
         lv = v.findViewById(R.id.bookListView);
 
         // get the book names and set adapter
+        /*
         Resources res = this.getResources();
         final String[] books = res.getStringArray(R.array.bookList);
         lv.setAdapter(new ArrayAdapter<>(c, android.R.layout.simple_list_item_1, books));
@@ -80,8 +86,26 @@ public class BookListFragment extends Fragment {
                 ((BookListInterface) c).pickBook(bTitle);
             }
         });
+        */
+
+        // create new array of books
+        bookList = new ArrayList<>();
 
 
         return v;
     }
+    
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof BookListInterface) {
+            chooseBook = (BookListInterface) context;
+        } else {
+            throw new RuntimeException(context.toString());
+        }
+        this.c = context;
+    }
+
+
 }

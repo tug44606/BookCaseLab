@@ -9,8 +9,8 @@ import org.json.JSONObject;
 public class Book implements Parcelable {
 
     public int id;
-    public int published;
 
+    public String published;
     public String title;
     public String author;
     public String coverURL;
@@ -19,14 +19,14 @@ public class Book implements Parcelable {
         this.title = jsonBook.getString("title");
         this.author = jsonBook.getString("author");
         this.coverURL = jsonBook.getString("cover_url");
+        this.published = jsonBook.getString("published");
 
         this.id = jsonBook.getInt("book_id");
-        this.published = jsonBook.getInt("published");
     }
 
     protected Book(Parcel in) {
         id = in.readInt();
-        published = in.readInt();
+        published = in.readString();
         title = in.readString();
         author = in.readString();
         coverURL = in.readString();
@@ -52,7 +52,7 @@ public class Book implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeInt(published);
+        dest.writeString(published);
         dest.writeString(title);
         dest.writeString(author);
         dest.writeString(coverURL);
@@ -67,11 +67,11 @@ public class Book implements Parcelable {
         this.id = id;
     }
 
-    public int getPublished() {
+    public String getPublished() {
         return published;
     }
 
-    public void setPublished(int published) {
+    public void setPublished(String published) {
         this.published = published;
     }
 
