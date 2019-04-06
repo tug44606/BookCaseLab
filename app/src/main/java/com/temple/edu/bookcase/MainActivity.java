@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     // to store the json objects
     JSONArray jsonList = null;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,26 +70,47 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
         getBooks(userSearch);
 
+        if(jsonList != null){
+            if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                vpFragment.updateViewPager(jsonList);
+            }
+            else {
+                lFragment.setBookList(jsonList);
+            }
+        }
+
+
         // button listener that passes the input string as parameter and return new json array
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 userSearch = searchBar.getText().toString();
                 getBooks(userSearch);
+                if(jsonList != null){
+                    if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                        vpFragment.updateViewPager(jsonList);
+                    }
+                    else {
+                        lFragment.setBookList(jsonList);
+                    }
+                }
+
             }
         });
     }
 
     public void getBooks(final String search) {
-        new Thread() {
+        Thread IOThread;
+
+        IOThread = new Thread(new Runnable() {
+            @Override
             public void run() {
                 // will display all the books currently in the database
                 String jsonURL = "https://kamorris.com/lab/audlib/booksearch.php?search=" + search;
                 URL url;
-
+                StringBuilder jsonBookString = new StringBuilder();
 
                 // this will hold entire json from the given url
-                StringBuilder jsonBookString = new StringBuilder();
                 BufferedReader reader = null;
                 String buffer;
 
@@ -120,14 +140,10 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                     e.printStackTrace();
                 }
 
-                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    vpFragment.updateViewPager(jsonList);
-                }
-                else {
-                    lFragment.setBookList(jsonList);
-                }
             }
-        }.start();
+        });
+
+        IOThread.start();
     }
 
 
