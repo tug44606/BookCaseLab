@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 import edu.temple.audiobookplayer.AudiobookService;
 
-public class MainActivity extends AppCompatActivity implements BookListFragment.BookListInterface {
+public class MainActivity extends AppCompatActivity implements BookListFragment.BookListInterface, BookDetailsFragment.AudioServiceInterface {
 
     BookDetailsFragment dFragment;
     ViewPagerFragment vpFragment;
@@ -198,5 +198,25 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             unbindService(serviceConnection);
             connection = false;
         }
+    }
+
+    @Override
+    public void playBook(int id) {
+        mediaControlBinder.play(id);
+    }
+
+    @Override
+    public void pauseBook() {
+        mediaControlBinder.pause();
+    }
+
+    @Override
+    public void stopBook() {
+        mediaControlBinder.stop();
+    }
+
+    @Override
+    public void seekBook(int position) {
+        mediaControlBinder.seekTo(position);
     }
 }
