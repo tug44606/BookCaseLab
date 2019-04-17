@@ -27,6 +27,7 @@ public class ViewPagerFragment extends Fragment {
     PagerAdapter pAdapter;
 
     Book bookObject;
+    ArrayList<Book> bookList;
     // constructor
     public ViewPagerFragment(){
 
@@ -40,33 +41,26 @@ public class ViewPagerFragment extends Fragment {
 
         // Set adapter and view pager
         pAdapter = new PagerAdapter(getFragmentManager());
+        bookList = new ArrayList<>();
         vp = v.findViewById(R.id.viewPager);
+        vp.setAdapter(pAdapter);
 
         return v;
     }
 
 
-    public void updateViewPager(JSONArray bookArray){
-        for(int i = 0; i < bookArray.length(); i++){
-            try {
-                // update
-                pAdapter.getItemPosition(i);
-                pAdapter.notifyDataSetChanged();
+    public void updateViewPager(final ArrayList bookArray){
+        bookList.clear();
+        bookList.addAll(bookArray);
 
-                // get book object
-                JSONObject jsonBook = bookArray.getJSONObject(i);
-                bookObject = new Book(jsonBook);
-
-                // get fragment from the static method
-                dFragment = BookDetailsFragment.setDetailFragmentParams(bookObject);
-                pAdapter.add(dFragment);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
+        for(int i = 0; i < bookList.size(); i++) {
+            bookObject = bookList.get(i);
+            dFragment = BookDetailsFragment.setDetailFragmentParams(bookObject);
+            pAdapter.add(dFragment);
+            pAdapter.notifyDataSetChanged();
         }
-        // set view pager
-        vp.setAdapter(pAdapter);
+
+        pAdapter.getItemPosition(bookObject);
     }
 
     class PagerAdapter extends FragmentStatePagerAdapter {

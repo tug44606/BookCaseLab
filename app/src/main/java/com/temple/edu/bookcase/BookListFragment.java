@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
+import edu.temple.audiobookplayer.AudiobookService;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -25,9 +25,13 @@ public class BookListFragment extends Fragment {
     // interface to be implemented
     public BookListInterface chooseBook;
 
+    AudiobookService.MediaControlBinder mediaControlBinder;
+
     // variables
     Context c;
     ListView lv;
+
+    Book book;
 
     ArrayList<Book> bookList;
     BookAdapter bAdapter;
@@ -84,31 +88,18 @@ public class BookListFragment extends Fragment {
         return v;
     }
 
-    public void setBookList(JSONArray jsonArray){
-        // Set new booklist from JSON object passed in
-        bookList = new ArrayList<>();
-
-        for(int i = 0; i < jsonArray.length(); i++){
-            try {
-                bookList.add(new Book(jsonArray.getJSONObject(i)));
-            } catch (Exception e) {
-            }
-        }
-
-        bAdapter = new BookAdapter(c, bookList);
-
-
+    public void setBookList(final ArrayList<Book> bookArray){
+        bAdapter = new BookAdapter(c, bookArray);
         bAdapter.notifyDataSetChanged();
-
         lv.setAdapter(bAdapter);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((BookListInterface) c).pickBook(bookList.get(position));
+                 book = bookArray.get(position);
+                ((BookListInterface) c).pickBook(book);
             }
         });
-
     }
 
     @Override

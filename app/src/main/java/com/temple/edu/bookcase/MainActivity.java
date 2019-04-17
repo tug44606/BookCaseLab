@@ -1,7 +1,11 @@
 package com.temple.edu.bookcase;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+
 import edu.temple.audiobookplayer.AudiobookService;
 
 public class MainActivity extends AppCompatActivity implements BookListFragment.BookListInterface {
@@ -33,6 +39,12 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     // to store the json objects
     JSONArray jsonList = null;
 
+    ArrayList<Book> bookList = new ArrayList<>();
+
+    // Service
+    boolean connection;
+    AudiobookService.MediaControlBinder mediaControlBinder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,10 +53,12 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         lFragment = new BookListFragment();
         vpFragment = new ViewPagerFragment();
         dFragment = new BookDetailsFragment();
+        bookList = new ArrayList<>();
 
         searchBar = findViewById(R.id.searchText);
         button = findViewById(R.id.searchButton);
 
+        bindService(new Intent(this, AudiobookService.class), serviceConnection, BIND_AUTO_CREATE);
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             // set single view fragment
@@ -68,17 +82,17 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                     addToBackStack(null).
                     commit();
         }
-
+        /*
         getBooks(userSearch);
 
-        if(jsonList != null){
+        if(bookList != null){
             if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                vpFragment.updateViewPager(jsonList);
+                vpFragment.updateViewPager(bookList);
             }
             else {
-                lFragment.setBookList(jsonList);
+                lFragment.setBookList(bookList);
             }
-        }
+        }*/
 
 
         // button listener that passes the input string as parameter and return new json array
@@ -87,12 +101,12 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             public void onClick(View v) {
                 userSearch = searchBar.getText().toString();
                 getBooks(userSearch);
-                if(jsonList != null){
+                if(bookList != null){
                     if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                        vpFragment.updateViewPager(jsonList);
+                        vpFragment.updateViewPager(bookList);
                     }
                     else {
-                        lFragment.setBookList(jsonList);
+                        lFragment.setBookList(bookList);
                     }
                 }
 
@@ -141,6 +155,15 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                     e.printStackTrace();
                 }
 
+                bookList.clear();
+                for(int i = 0; i < jsonList.length(); i++){
+                    try {
+                        bookList.add(new Book(jsonList.getJSONObject(i)));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }
         });
 
@@ -152,5 +175,28 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     @Override
     public void pickBook(Book jsonBook) {
         dFragment.updateBook(jsonBook);
+    }
+
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mediaControlBinder = ((AudiobookService.MediaControlBinder) service);
+            connection = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            connection = false;
+            mediaControlBinder = null;
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(connection) {
+            unbindService(serviceConnection);
+            connection = false;
+        }
     }
 }
