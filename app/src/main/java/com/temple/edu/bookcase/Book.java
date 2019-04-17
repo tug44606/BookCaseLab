@@ -9,6 +9,7 @@ import org.json.JSONObject;
 public class Book implements Parcelable {
 
     public int id;
+    public int duration;
 
     public String published;
     public String title;
@@ -22,6 +23,7 @@ public class Book implements Parcelable {
         this.published = jsonBook.getString("published");
 
         this.id = jsonBook.getInt("book_id");
+        this.duration = jsonBook.getInt("duration");
     }
 
     protected Book(Parcel in) {
@@ -65,6 +67,14 @@ public class Book implements Parcelable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getDuration(){
+        return duration;
+    }
+
+    public void setDuration(){
+        this.duration = duration;
     }
 
     public String getPublished() {
