@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     // to store the json objects
     JSONArray jsonList = null;
 
+    boolean portrait;
+
     ArrayList<Book> bookList = new ArrayList<>();
 
     // Service
@@ -56,11 +58,13 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         bookList = new ArrayList<>();
 
         searchBar = findViewById(R.id.searchText);
+        searchBar.clearFocus();
         button = findViewById(R.id.searchButton);
 
         bindService(new Intent(this, AudiobookService.class), serviceConnection, BIND_AUTO_CREATE);
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            portrait = true;
             // set single view fragment
             getSupportFragmentManager().
                     beginTransaction().
@@ -69,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                     commit();
         }
         else {
+            portrait = false;
             // set split view with fragments
             getSupportFragmentManager().
                     beginTransaction().
@@ -136,6 +141,12 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                     while ((buffer = reader.readLine()) != null) {
                         jsonBookString.append(buffer);
                     }
+
+
+                    Message msg = Message.obtain();
+                    msg.obj = jsonBookString.toString();
+                    jsonHandler.sendMessage(msg);
+
                 }
                 catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -148,21 +159,8 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
                 // Convert StringBuilder to String to pass to jsonArray constructor
 
-                try {
-                    jsonList = new JSONArray(jsonBookString.toString());
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
-                bookList.clear();
-                for(int i = 0; i < jsonList.length(); i++){
-                    try {
-                        bookList.add(new Book(jsonList.getJSONObject(i)));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
+
 
             }
         });
@@ -171,10 +169,37 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     }
 
 
+    Handler jsonHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            try {
+                jsonList = new JSONArray((String) msg.obj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            bookList.clear();
+            for(int i = 0; i < jsonList.length(); i++){
+                try {
+                    bookList.add(new Book(jsonList.getJSONObject(i)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(portrait) {
+                vpFragment.updateViewPager(bookList);
+            } else {
+                lFragment.setBookList(bookList);
+            }
+            return false;
+        }
+    });
+
+
+
 
     @Override
-    public void pickBook(Book jsonBook) {
-        dFragment.updateBook(jsonBook);
+    public void pickBook(Book bookObject) {
+        dFragment.updateBook(bookObject);
     }
 
     ServiceConnection serviceConnection = new ServiceConnection() {
@@ -218,5 +243,10 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     @Override
     public void seekBook(int position) {
         mediaControlBinder.seekTo(position);
+    }
+
+    @Override
+    public void setProgress(Handler progressHandler) {
+        mediaControlBinder.setProgressHandler(progressHandler);
     }
 }

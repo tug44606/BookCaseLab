@@ -3,7 +3,10 @@ package com.temple.edu.bookcase;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +35,6 @@ public class BookDetailsFragment extends Fragment {
     ImageButton stopButton;
     ImageButton pauseButton;
     SeekBar seekBar;
-    ProgressBar progressBar;
     TextView progressText;
 
     // constructor
@@ -103,6 +105,7 @@ public class BookDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ((AudioServiceInterface) c).playBook(bookObject.getId());
+                ((AudioServiceInterface) c).setProgress(pHandler);
             }
         });
         pauseButton.setOnClickListener(new View.OnClickListener() {
@@ -115,15 +118,17 @@ public class BookDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 seekBar.setProgress(0);
+                progressText.setText("0s");
                 ((AudioServiceInterface) c).stopBook();
             }
         });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                progressBar.setProgress(progress);
-                progressText.setText("" + progress + "%");
-                ((AudioServiceInterface) c).seekBook(progress);
+                if(fromUser) {
+                    progressText.setText("" + progress + "s");
+                    ((AudioServiceInterface) c).seekBook(progress);
+                }
             }
 
             @Override
@@ -136,6 +141,19 @@ public class BookDetailsFragment extends Fragment {
 
             }
         });
+    }
+
+    Handler pHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            updateSeekbar(msg.what);
+            return false;
+        }
+    });
+
+    public void updateSeekbar(int time){
+        seekBar.setProgress(time);
+        progressText.setText("" + time + "s");
     }
 
     @Override
@@ -155,6 +173,7 @@ public class BookDetailsFragment extends Fragment {
         void pauseBook();
         void stopBook();
         void seekBook(int position);
+        void setProgress(Handler progressHandler);
     }
 
 }

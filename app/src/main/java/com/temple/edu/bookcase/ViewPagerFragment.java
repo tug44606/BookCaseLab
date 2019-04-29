@@ -28,8 +28,16 @@ public class ViewPagerFragment extends Fragment {
 
     Book bookObject;
     ArrayList<Book> bookList;
+    ArrayList<BookDetailsFragment> bdFragment;
     // constructor
     public ViewPagerFragment(){
+
+    }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
     }
 
@@ -43,24 +51,21 @@ public class ViewPagerFragment extends Fragment {
         pAdapter = new PagerAdapter(getFragmentManager());
         bookList = new ArrayList<>();
         vp = v.findViewById(R.id.viewPager);
+        bdFragment = new ArrayList<>();
+
         vp.setAdapter(pAdapter);
 
         return v;
     }
 
 
-    public void updateViewPager(final ArrayList bookArray){
-        bookList.clear();
-        bookList.addAll(bookArray);
-
-        for(int i = 0; i < bookList.size(); i++) {
-            bookObject = bookList.get(i);
+    public void updateViewPager(final ArrayList<Book> bookArray){
+        for(int i = 0; i < bookArray.size(); i++) {
+            bookObject = bookArray.get(i);
             dFragment = BookDetailsFragment.setDetailFragmentParams(bookObject);
-            pAdapter.add(dFragment);
-            pAdapter.notifyDataSetChanged();
+            bdFragment.add(dFragment);
         }
-
-        pAdapter.getItemPosition(bookObject);
+        pAdapter.addBooks(bdFragment);
     }
 
     class PagerAdapter extends FragmentStatePagerAdapter {
@@ -72,8 +77,19 @@ public class ViewPagerFragment extends Fragment {
             pFragments = new ArrayList<>();
         }
 
+        public void addBooks(ArrayList<BookDetailsFragment> books) {
+            pFragments.clear();
+            pFragments.addAll(books);
+            notifyDataSetChanged();
+        }
+
         public void add(BookDetailsFragment fragment){
             pFragments.add(fragment);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override

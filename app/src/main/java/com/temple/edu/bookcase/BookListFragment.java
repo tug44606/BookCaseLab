@@ -42,7 +42,7 @@ public class BookListFragment extends Fragment {
 
     // interface
     public interface BookListInterface{
-        void pickBook(Book jsonBook);
+        void pickBook(Book bookObject);
     }
 
     @Override
