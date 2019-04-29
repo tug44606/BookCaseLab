@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ public class ViewPagerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate layout
         View v = inflater.inflate(R.layout.viewpager_fragment, container, false);
 
@@ -55,11 +57,14 @@ public class ViewPagerFragment extends Fragment {
 
         vp.setAdapter(pAdapter);
 
+
+        Log.d("ViewPagerFragment.onCreateView(): ", "Successful");
         return v;
     }
 
 
     public void updateViewPager(final ArrayList<Book> bookArray){
+        bdFragment.clear();
         for(int i = 0; i < bookArray.size(); i++) {
             bookObject = bookArray.get(i);
             dFragment = BookDetailsFragment.setDetailFragmentParams(bookObject);
@@ -81,10 +86,6 @@ public class ViewPagerFragment extends Fragment {
             pFragments.clear();
             pFragments.addAll(books);
             notifyDataSetChanged();
-        }
-
-        public void add(BookDetailsFragment fragment){
-            pFragments.add(fragment);
         }
 
         @Override
