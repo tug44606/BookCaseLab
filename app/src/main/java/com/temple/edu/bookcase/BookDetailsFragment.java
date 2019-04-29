@@ -101,6 +101,10 @@ public class BookDetailsFragment extends Fragment {
         String imageURL = bookObject.getCoverURL();
         Picasso.get().load(imageURL).into(iv);
 
+        // seek bar is same length as book duration rather than 0 - 100
+        seekBar.setMax(bookObject.getDuration());
+
+
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
