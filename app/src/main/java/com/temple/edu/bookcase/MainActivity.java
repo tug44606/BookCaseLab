@@ -1,6 +1,7 @@
 package com.temple.edu.bookcase;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -8,6 +9,7 @@ import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,16 +39,13 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     BookListFragment lFragment;
 
     Button button;
-    ImageButton downloadButton;
-    ImageButton deleteButton;
     EditText searchBar;
-    String userSearch;
-
-    SharedPreferences preferences;
+    String userSearch = " ";
 
     // to store the json objects
     JSONArray jsonList = null;
 
+    SharedPreferences preferences;
     boolean portrait;
 
     ArrayList<Book> bookList = new ArrayList<>();
@@ -59,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
 
         lFragment = new BookListFragment();
@@ -101,15 +99,19 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
         Log.d("OnCreate: MainActivity: ", "Setup completed");
 
-
         preferences = getPreferences(MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
+
+
 
         // button listener that passes the input string as parameter and return new json array
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 userSearch = searchBar.getText().toString();
+                Log.d("Button clicked with search: ", "" + userSearch);
+
 
                 editor.putString("SEARCH", userSearch);
                 editor.apply();
