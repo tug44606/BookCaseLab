@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     BookListFragment lFragment;
 
     Button button;
+    ImageButton downloadButton;
+    ImageButton deleteButton;
     EditText searchBar;
     String userSearch;
 
@@ -111,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
             }
         });
+
     }
 
     public void getBooks(final String search) {
