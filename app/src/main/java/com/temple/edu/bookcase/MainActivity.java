@@ -3,10 +3,12 @@ package com.temple.edu.bookcase;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     EditText searchBar;
     String userSearch;
 
+    SharedPreferences preferences;
+
     // to store the json objects
     JSONArray jsonList = null;
 
@@ -52,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     AudiobookService.MediaControlBinder mediaControlBinder;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -98,11 +102,18 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         Log.d("OnCreate: MainActivity: ", "Setup completed");
 
 
+        preferences = getPreferences(MODE_PRIVATE);
+        final SharedPreferences.Editor editor = preferences.edit();
+
         // button listener that passes the input string as parameter and return new json array
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 userSearch = searchBar.getText().toString();
+
+                editor.putString("SEARCH", userSearch);
+                editor.apply();
+
                 getBooks(userSearch);
                 if(bookList != null){
                     if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -115,6 +126,9 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
             }
         });
+
+        final String savedSearch = preferences.getString("SEARCH", "Default Value");
+        getBooks(savedSearch);
 
     }
 
