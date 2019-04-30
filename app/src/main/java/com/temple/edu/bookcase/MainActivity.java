@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -223,6 +224,11 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     @Override
     public void playBook(int id) {
         mediaControlBinder.play(id);
+    }
+
+    @Override
+    public void playBook(File in) {
+        mediaControlBinder.play(in);
     }
 
     @Override

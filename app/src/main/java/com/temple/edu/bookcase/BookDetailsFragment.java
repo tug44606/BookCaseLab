@@ -64,6 +64,8 @@ public class BookDetailsFragment extends Fragment {
     ImageButton deleteButton;
     SeekBar seekBar;
     TextView progressText;
+    boolean isDownloaded;
+    File bookFile;
 
     // constructor
     public BookDetailsFragment(){
@@ -101,7 +103,6 @@ public class BookDetailsFragment extends Fragment {
         progressText = view.findViewById(R.id.progressText);
         deleteButton = view.findViewById(R.id.deleteButton);
         downloadButton = view.findViewById(R.id.downloadButton);
-
         // Add these to layout after
         //button = view.findViewById(R.id.button);
         //searchBar = view.findViewById(R.id.searchBar);
@@ -132,6 +133,12 @@ public class BookDetailsFragment extends Fragment {
         String imageURL = bookObject.getCoverURL();
         Picasso.get().load(imageURL).into(iv);
 
+        isDownloaded = isDownloaded(bookObject.getId());
+        if(isDownloaded){
+            String filename = "Book" + bookObject.getId() + ".mp3";
+            bookFile = new File(c.getFilesDir(), filename);
+        }
+
         // seek bar is same length as book duration rather than 0 - 100
         seekBar.setMax(bookObject.getDuration());
 
@@ -139,8 +146,16 @@ public class BookDetailsFragment extends Fragment {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((AudioServiceInterface) c).playBook(bookObject.getId());
-                ((AudioServiceInterface) c).setProgress(pHandler);
+                if(isDownloaded){
+                    Log.d("playButton.onClick(): ","Playing downloaded file.");
+                    ((AudioServiceInterface) c).playBook(bookFile);
+                    ((AudioServiceInterface) c).setProgress(pHandler);
+                } else {
+                    Log.d("playButton.onClick(): ","Streaming file.");
+                    ((AudioServiceInterface) c).playBook(bookObject.getId());
+                    ((AudioServiceInterface) c).setProgress(pHandler);
+                }
+
             }
         });
         pauseButton.setOnClickListener(new View.OnClickListener() {
@@ -192,6 +207,7 @@ public class BookDetailsFragment extends Fragment {
 
                 if(file.exists()){
                     if(file.delete()){
+                        isDownloaded = false;
                         Log.d("deleteButton.onClick(): ", "Book deleted!");
                     }
                     else {
@@ -206,7 +222,19 @@ public class BookDetailsFragment extends Fragment {
         });
     }
 
+    private boolean isDownloaded(int bookId){
+        Log.d("BookDetailsFragment.isDownloaded(): ", "Book ID = " + bookObject.getId());
+        String filename = "Book" + bookObject.getId() + ".mp3";
+        File file = new File(c.getFilesDir(), filename);
 
+        if(file.exists()){
+            return true;
+        } else {
+            return false;
+        }
+
+
+    }
 
     private void downloadBook(int bookId) {
         downloadAsync task = new downloadAsync(bookId, getContext());
@@ -269,6 +297,7 @@ public class BookDetailsFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String s) {
+            isDownloaded = true;
             Log.d("DownloadAsync().onPostExecute: ", "Success!");
             Toast.makeText(context, "Download finished", Toast.LENGTH_LONG).show();
         }
@@ -301,6 +330,7 @@ public class BookDetailsFragment extends Fragment {
 
     public interface AudioServiceInterface{
         void playBook(int id);
+        void playBook(File in);
         void pauseBook();
         void stopBook();
         void seekBook(int position);
