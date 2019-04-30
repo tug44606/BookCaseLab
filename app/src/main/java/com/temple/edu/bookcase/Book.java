@@ -10,6 +10,7 @@ public class Book implements Parcelable {
 
     public int id;
     public int duration;
+    public int position = 1;
 
     public String published;
     public String title;
@@ -60,6 +61,13 @@ public class Book implements Parcelable {
         dest.writeString(coverURL);
     }
 
+    public int getPosition() {
+        return  position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
 
     public int getId() {
         return id;

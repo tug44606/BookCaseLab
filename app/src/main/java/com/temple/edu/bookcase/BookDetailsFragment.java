@@ -1,13 +1,9 @@
 package com.temple.edu.bookcase;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -17,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,24 +20,11 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.Objects;
-
-import edu.temple.audiobookplayer.AudiobookService;
-
-import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 
 public class BookDetailsFragment extends Fragment {
 
@@ -74,6 +56,7 @@ public class BookDetailsFragment extends Fragment {
 
     // pass it to the next detail fragment for onCreate()
     public static BookDetailsFragment setDetailFragmentParams(Book bookList) {
+        Log.d("BookDetailFragment.setDetailsParams(): ", "Bundle created!");
         BookDetailsFragment fragment = new BookDetailsFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("bookPick", bookList);
@@ -92,6 +75,9 @@ public class BookDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Log.d("BookDetailFragment.onCreateView(): ", "Started");
+
         View view = inflater.inflate(R.layout.booktext_fragment, container, false);
         tv = view.findViewById(R.id.bookTitleTextView);
         iv = view.findViewById(R.id.bookImageView);
@@ -148,11 +134,13 @@ public class BookDetailsFragment extends Fragment {
             public void onClick(View v) {
                 if(isDownloaded){
                     Log.d("playButton.onClick(): ","Playing downloaded file.");
-                    ((AudioServiceInterface) c).playBook(bookFile);
+                    Log.d("playButton.onClick(): ","Position = " + bookObject.getPosition());
+                    ((AudioServiceInterface) c).playBook(bookFile, bookObject.getPosition());
                     ((AudioServiceInterface) c).setProgress(pHandler);
                 } else {
                     Log.d("playButton.onClick(): ","Streaming file.");
-                    ((AudioServiceInterface) c).playBook(bookObject.getId());
+                    Log.d("playButton.onClick(): ","Position = " + bookObject.getPosition());
+                    ((AudioServiceInterface) c).playBook(bookObject.getId(), bookObject.getPosition());
                     ((AudioServiceInterface) c).setProgress(pHandler);
                 }
 
@@ -161,7 +149,9 @@ public class BookDetailsFragment extends Fragment {
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("pauseButton.onClick(): ","Time - " + seekBar.getProgress());
                 ((AudioServiceInterface) c).pauseBook();
+                bookObject.setPosition(seekBar.getProgress() - 10);
             }
         });
         stopButton.setOnClickListener(new View.OnClickListener() {
@@ -169,6 +159,7 @@ public class BookDetailsFragment extends Fragment {
             public void onClick(View v) {
                 seekBar.setProgress(0);
                 progressText.setText("0s");
+                bookObject.setPosition(1);
                 ((AudioServiceInterface) c).stopBook();
             }
         });
@@ -331,6 +322,8 @@ public class BookDetailsFragment extends Fragment {
     public interface AudioServiceInterface{
         void playBook(int id);
         void playBook(File in);
+        void playBook(File in, int position);
+        void playBook(int id, int position);
         void pauseBook();
         void stopBook();
         void seekBook(int position);

@@ -232,6 +232,16 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     }
 
     @Override
+    public void playBook(File in, int position) {
+        mediaControlBinder.play(in, position);
+    }
+
+    @Override
+    public void playBook(int id, int position) {
+        mediaControlBinder.play(id, position);
+    }
+
+    @Override
     public void pauseBook() {
         mediaControlBinder.pause();
     }
